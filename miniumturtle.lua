@@ -55,12 +55,17 @@ end
 function GetDiamonds()
   SetUp()
   ClearSlot(1)
+  ClearSlot(2)
   turtle.select(1)
-  turtle.suck(8)
-  if turtle.getItemCount(1)>8 then
-    print("Too many diamonds. Dropping "..(turtle.getItemCount(1)-8).." items.")
-    turtle.drop(turtle.getItemCount(1)-8)
+  while turtle.getItemCount(1)<64 do
+    turtle.suck(64)
   end
+  turtle.select(2)
+  if turtle.getItemCount(2)>0 then
+    print("Too many diamonds. Dropping "..(turtle.getItemCount(2)).." items.")
+    turtle.drop(turtle.getItemCount(2))
+  end
+  turtle.select(1)
   if not turtle.compareTo(14) then
     print("Not diamonds. Dropping "..turtle.getItemCount(1).." items.")
     ClearSlot(1)
@@ -69,6 +74,7 @@ end
 
 function GetCoal()
   ClearSlot(2)
+  ClearSlot(3)
   turtle.select(2)
   SetDown()
   turtle.suck(1)
@@ -93,15 +99,15 @@ function Ready()
     return false
   end
 
-  turtle.select(2)
-  if not turtle.compareTo(15) then
-    print("Not Ready - not coal")
-    return false
-  end
-  if turtle.getItemCount(2)<1 then
-    print("Not Ready - too few coal")
-    return false
-  end
+  -- turtle.select(2)
+  -- if not turtle.compareTo(15) then
+  --   print("Not Ready - not coal")
+  --   return false
+  -- end
+  -- if turtle.getItemCount(2)<1 then
+  --   print("Not Ready - too few coal")
+  --   return false
+  -- end
   print("Ready")
   return true
 end
@@ -110,9 +116,9 @@ function PushInput()
   print("PushInput")
   SetDown()
   turtle.select(1)
-  turtle.dropDown(8)
-  turtle.select(2)
-  turtle.dropDown(1)
+  turtle.dropDown(64)
+  -- turtle.select(2)
+  -- turtle.dropDown(1)
 end
 
 function Refuel()
@@ -128,7 +134,8 @@ function Refuel()
 end
 
 function GetMinium()
-  turtle.suckDown(8)
+  turtle.select(1)
+  turtle.suckDown(64)
   PushOutput()
 end
 
@@ -137,11 +144,11 @@ PushOutput()
 --while true do
 Refuel()
 GetDiamonds() --diamond
-GetCoal() --charcoal
+-- GetCoal() --charcoal
 if Ready() then
   PushInput()
-  os.sleep(81)
+  os.sleep(641)
   GetMinium() --minium
 end
-MoveDown()
+SetDown()
 --end
