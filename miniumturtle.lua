@@ -118,9 +118,22 @@ function PushInput()
   turtle.dropDown(1)
 end
 
+function Refuel()
+  if turtle.getFuelLevel()<1000 then
+    SetDown()
+    turtle.select(5)
+    turtle.suck(64)
+    turtle.refuel(64)
+    print("Fuel Level Now: "..turtle.getFuelLevel())
+  else
+    print("Fuel Level Ok. Continuing...")
+  end
+end
+
 print("main")
 PushOutput()
 --while true do
+Refuel()
 GetDiamonds() --diamond
 GetCoal() --charcoal
 --if Ready() then
