@@ -79,11 +79,11 @@ function GetCoal()
   SetDown()
   turtle.suck(1)
   if turtle.getItemCount(2)>1 then
-    print("Too many coal. Dropping "..(turtle.getItemCount(1)-8).." items.")
+    print("Too many coal. Dropping "..(turtle.getItemCount(2)-1).." items.")
     turtle.drop(turtle.getItemCount(2)-1)
   end
   if not turtle.compareTo(15) then
-    print("Not coal. Dropping "..turtle.getItemCount(1).." items.")
+    print("Not coal. Dropping "..turtle.getItemCount(2).." items.")
     ClearSlot(2)
   end
 end
