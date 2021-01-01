@@ -45,6 +45,8 @@ function PushOutput()
   turtle.dropUp()
   turtle.select(4)
   turtle.dropUp()
+  turtle.select(5)
+  turtle.dropUp()
 end
 
 function ClearSlot(slot)
@@ -136,10 +138,11 @@ PushOutput()
 Refuel()
 GetDiamonds() --diamond
 GetCoal() --charcoal
---if Ready() then
---  PushInput()
---  os.sleep(81)
---  GetMinium() --minium
---end
---PushOutput()
+if Ready() then
+  PushInput()
+  os.sleep(81)
+  GetMinium() --minium
+end
+PushOutput()
+MoveDown()
 --end
