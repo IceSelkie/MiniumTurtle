@@ -18,19 +18,13 @@
 
 function SetUp()
   if not redstone.getInput("left") then
-    print("Moving Up")
     turtle.up()
-  else
-    print("Not Moving Up")
   end
 end
 
 function SetDown()
   if redstone.getInput("left") then
-    print("Moving Down")
     turtle.down()
-  else
-    print("Not Moving Down")
   end
 end
 
@@ -59,7 +53,6 @@ function ClearSlot(slot)
 end
 
 function GetDiamonds()
-  print("GetDiamonds")
   SetUp()
   ClearSlot(1)
   turtle.select(1)
@@ -75,7 +68,6 @@ function GetDiamonds()
 end
 
 function GetCoal()
-  print("GetCoal")
   ClearSlot(2)
   turtle.select(2)
   SetDown()
@@ -91,23 +83,26 @@ function GetCoal()
 end
 
 function Ready()
-  print("Ready")
   turtle.select(1)
   if not turtle.compareTo(14) then
+    print("Not Ready - not diamond")
     return false
   end
   if turtle.getItemCount(1)<8 then
+    print("Not Ready - too few diamond")
     return false
   end
 
   turtle.select(2)
   if not turtle.compareTo(15) then
+    print("Not Ready - not coal")
     return false
   end
   if turtle.getItemCount(2)<1 then
+    print("Not Ready - too few coal")
     return false
   end
-
+  print("Ready")
   return true
 end
 
@@ -128,8 +123,13 @@ function Refuel()
     turtle.refuel(64)
     print("Fuel Level Now: "..turtle.getFuelLevel())
   else
-    print("Fuel Level Ok. Continuing...")
+    print("Fuel Level Okay ("..turtle.getFuelLevel().."). Continuing...")
   end
+end
+
+function GetMinium()
+  turtle.suckDown(8)
+  PushOutput()
 end
 
 print("main")
@@ -143,6 +143,5 @@ if Ready() then
   os.sleep(81)
   GetMinium() --minium
 end
-PushOutput()
 MoveDown()
 --end
