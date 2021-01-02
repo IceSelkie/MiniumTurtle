@@ -1,20 +1,82 @@
---Minium Program:
+--## Minium Turtle ##--
 --
---get diamond & charcoal
---push diamond, push charcoal
---wait
---pull minium
+-- Calcinator
+--   * can be done with itemDucts/
+--       ioBuses
+--   * top/sides = input diamond and 
+--       output minium
+--   * bottom = only side to input 
+--       charcoal
+--
+-- Aludel
+--   * Now this one is the harder part,
+--       and what this program aims to
+--       solve.
+--   * When a player shift clicks minium
+--       dust and inert stone into an
+--       aludel, or other similar items,
+--       they automatically lock to the
+--       correct slots.
+--   * However, when non-player objects
+--       interact with it and put items
+--       in, they go to the first non-
+--       fuel open slot. Therefor, one
+--       needs to be careful in
+--       inserting items in. They must
+--       go in in the exact right order,
+--       and not overflow, or else it
+--       might get clogged and require
+--       a player to clean it out, or
+--       have the turtle break it and
+--       place it back down. AE's ME
+--       systems have nondeterministic
+--       item output order when using
+--       ME Interfaces, thus care must
+--       be taken.
 --
 --
---needs: 
---  input: coal, diamonds, redstone
---  output: return
---  machine: calcinator
+-- Solution
+--   * My solution to this issue is to
+--       use the ME system to output the
+--       required items into chests in
+--       specific spots, which a turtle
+--       can then grab from and interact
+--       with an aludel and ensure the
+--       items enter in the correct
+--       order, thus end up in the
+--       correct slots without breaking
+--       the aludel.
+-- Setup
+--   * Turtle will be facing forward,
+--       with a chest in front,
+--       containing minium dust. Above
+--       that chest is another
+--       containing inert stones. These
+--       can easily be autocrafted.
+--       The aludle's bottom half will
+--       be aligned with the top chest,
+--       and be rotationally to the left
+--       of the chest, with a redstone
+--       block, to the left of that 
+--       (opposite of the chest). This
+--       redstone block can be used as a
+--       marker for the turtle to
+--       recover, should the turtle be
+--       restarted, or the chunk gets
+--       unexpectedly unloaded. And
+--       finally a chest or DSU (deep
+--       storage unit) directly above
+--       the turtle's upper location for
+--       minium stone output. Directly
+--       below the turtle's lower
+--       location is another container
+--       for storing charcoal or fuel.
+--   * This setup could be condensed to
+--       one location without needing to
+--       move vertically, but I wanted
+--       it to look nice and fit in a
+--       wall, so I designed it as such.
 --
---.D.   diam
---BTC   coal & redstone block marker
---RTR   redstone input & return
---.C.   calcinator
 
 function SetUp()
   if not redstone.getInput("left") then
