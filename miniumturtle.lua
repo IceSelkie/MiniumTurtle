@@ -102,35 +102,47 @@ function Main()
     turtle.suckDown(64)
     turtle.refuel(64)
     print("Fuel Level Now: "..turtle.getFuelLevel())
-  else
+  end
 
   -- Get Materials
+  print("Getting Stone")
   turtle.up()
   turtle.select(1)
   while turtle.getItemCount()<1 do
+    print("Pulling Stone")
     turtle.suck(1)
   end
   if not turtle.compareTo(slot_inertstone) then
     print("Not Inert Stone!")
     turtle.dropUp(turtle.getItemCount(1))
+  else
+    print("Is Stone")
   end
+  print("Getting Minium")
   turtle.down()
   turtle.select(2)
   while turtle.getItemCount()<8 do
+    print("Pulling Minium")
     turtle.suck(8)
   end
   if not turtle.compareTo(slot_miniumdust) then
     print("Not Minium Dust!")
     turtle.dropUp(turtle.getItemCount(2))
+  else
+    print("Is Minium")
   end
   if turtle.getItemCount(2)>8 then
     print("Too many minium dust, dropping "..(turtle.getItemCount(2)-8))
     turtle.drop(turtle.getItemCount(2)-8)
+  else
+    print("Not too many Minium")
   end
   turtle.select(3)
   if turtle.getItemCount(3)>0 then
     print("Extra items in slot 3, dropping "..turtle.getItemCount(3))
     turtle.drop(turtle.getItemCount(3))
+  else
+    print("Slot 3 empty.")
   end
 
   -- Insert Ingredients
