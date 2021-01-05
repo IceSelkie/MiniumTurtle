@@ -1,4 +1,10 @@
---## Minium Turtle ##--
+--## Minium Turtle v1.2 ##--
+--
+-- (c) Stanley S. 2020-2021
+--
+-- Now on pastebin!
+--  * https://pastebin.com/bZuGWZyR
+--  * "pastebin get bZuGWZyR startup"
 --
 -- Calcinator
 --   * can be done with itemDucts/
@@ -77,6 +83,9 @@
 --       move vertically, but I wanted
 --       it to look nice and fit in a
 --       wall, so I designed it as such.
+--   * Turtle can be disabled with a
+--       redstone signal applied to its
+--       right side.
 --
 
 
@@ -96,10 +105,16 @@ local count_product = 1         -- = 1 minium stone
 -- Main
 function Main()
   local completed = 0
-  while true do
 
   -- Reset, incase of unplanned restart
-    Reset()
+  Reset()
+
+  while true do
+
+  -- If wait need, wait
+    while redstone.getInput("right") do
+      os.sleep(1)
+    end
 
   -- Get Materials
     getIngredient(1, count_ingredient_dust, slot_ingredient_dust)
@@ -132,22 +147,27 @@ end
 
 -- Functions
 function Reset()
+
+  if redstone.getInput("left") then
+    os.sleep(infuse_time) -- incase of restart during cook
+    while turtle.suck() do end
+    turtle.turnRight()
+  end
+
   -- check if we have items to clear out
   local itemcount = 0
-  for i=1,6 do
+  for i=1,8 do
     itemcount = itemcount + turtle.getItemCount(i)
   end
 
   -- If we have items, return to top
   -- spot to drop of items in return.
   if itemcount>0 then
-    if redstone.getInput("left") then
-      turtle.turnRight()
-    elseif not redstone.getInput("back") then
+    if not redstone.getInput("back") then
       turtle.up()
     end
 
-    for i=1,6 do
+    for i=1,8 do
       if turtle.getItemCount(i)>0 then
         turtle.select(i)
         turtle.dropUp()
@@ -158,9 +178,6 @@ function Reset()
   -- Else there are no items to drop
   -- off, return to bottom instead.
   else
-    if redstone.getInput("left") then
-      turtle.turnRight()
-    end
     if redstone.getInput("back") then
       turtle.down()
     end
@@ -201,12 +218,10 @@ function getIngredient(slot, count, compare)
     if wasDown then turtle.down() end
   end
   if turtle.getItemCount(slot)>count then
-    -- print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot)-count))
     turtle.drop(turtle.getItemCount(slot)-count)
   end
   turtle.select(slot+1)
   if turtle.getItemCount(slot+1)>0 then
-    -- print("Extra items in next slot. Returning "..turtle.getItemCount(slot+1))
     turtle.drop(turtle.getItemCount(slot+1))
   end
   turtle.select(slot)
