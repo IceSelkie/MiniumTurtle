@@ -84,17 +84,18 @@
 local slot_fuel = 13
 local slot_ingredient_top = 14  -- inert stone
 local slot_ingredient_dust = 15 -- minium dust
-local slot_product = 16 -- minium stone
+local slot_product = 16         -- minium stone
 
-local infuse_time = 10.5 -- 10 second smelt
+local infuse_time = 10.5 -- 10 second smelt + .5 second delay to prevent EE3 weirdness.
 
-local count_ingredient_top = 1
-local count_ingredient_dust = 8
-local count_product = 1
+local count_ingredient_top = 1  --   1 inert stone
+local count_ingredient_dust = 8 -- + 8 minium dust
+local count_product = 1         -- = 1 minium stone
 
 
 -- Main
 function Main()
+  local completed = 0
   while true do
 
   -- Reset, incase of unplanned restart
@@ -123,6 +124,8 @@ function Main()
     turtle.dropUp(1)
     turtle.turnRight()
     turtle.down()
+    completed = completed + 1
+    print(completed.." completed.")
   end
 end
 
@@ -173,14 +176,14 @@ function Refuel()
     turtle.select(5)
     turtle.suckDown(64)
     if not turtle.compareTo(slot_fuel) then
-      print("Unexpected item in fuel input!")
       if not turtle.refuel() then
+        print("Unexpected non-fuel item in fuel input!")
         turtle.up()
-        turtle.dropUp()
+        turtle.dropUp(turtle.getItemCount(5))
         turtle.down()
       end
     end
-    turtle.refuel()
+    turtle.refuel(turtle.getItemCount(5))
     print("Fuel Level Now: "..turtle.getFuelLevel())
   end
 end
@@ -198,12 +201,12 @@ function getIngredient(slot, count, compare)
     if wasDown then turtle.down() end
   end
   if turtle.getItemCount(slot)>count then
-    print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot)-count))
+    -- print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot)-count))
     turtle.drop(turtle.getItemCount(slot)-count)
   end
   turtle.select(slot+1)
   if turtle.getItemCount(slot+1)>0 then
-    print("Extra items in next slot. Returning "..turtle.getItemCount(slot+1))
+    -- print("Extra items in next slot. Returning "..turtle.getItemCount(slot+1))
     turtle.drop(turtle.getItemCount(slot+1))
   end
   turtle.select(slot)
