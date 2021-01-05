@@ -80,227 +80,132 @@
 
 
 -- Global Variables
+local slot_fuel = 13
+local slot_ingredient_top = 14  -- inert stone
+local slot_ingredient_dust = 15 -- minium dust
+local slot_product = 16 -- minium stone
 
+local infuse_time = 10 -- 10 second smelt
+
+local count_ingredient_top = 1
+local count_ingredient_dust = 8
+local count_product = 1
 
 
 -- Main
 function Main()
-  local slot_charcoal = 13
-  local slot_inertstone = 14
-  local slot_miniumdust = 15
-  local slot_miniumstone = 16
   -- Reset, incase of unplanned restart
-  ReturnHome()
-
-  -- Refuel
-  if turtle.getFuelLevel()<15000 then
-    turtle.select(5)
-    if turtle.getItemCount(5)>0 then
-      turtle.refuel(turtle.getItemCount(5))
-      turtle.dropUp(turtle.getItemCount(5))
-    end
-    turtle.suckDown(64)
-    turtle.refuel(64)
-    print("Fuel Level Now: "..turtle.getFuelLevel())
-  end
+  Reset()
 
   -- Get Materials
+  getIngredient(1, count_ingredient_dust, slot_ingredient_dust)
   turtle.up()
-  turtle.select(1)
-  while turtle.getItemCount(1)<1 do
-    turtle.suck(1)
-  end
-  if not turtle.compareTo(slot_inertstone) then
-    print("Not Inert Stone!")
-    turtle.dropUp(turtle.getItemCount(1))
-  end
-  turtle.down()
-  turtle.select(2)
-  while turtle.getItemCount(2)<8 do
-    turtle.suck(8)
-  end
-  if not turtle.compareTo(slot_miniumdust) then
-    print("Not Minium Dust!")
-    turtle.dropUp(turtle.getItemCount(2))
-  end
-  if turtle.getItemCount(2)>8 then
-    print("Too many minium dust, dropping "..(turtle.getItemCount(2)-8))
-    turtle.drop(turtle.getItemCount(2)-8)
-  end
-  turtle.select(3)
-  if turtle.getItemCount(3)>0 then
-    print("Extra items in slot 3, dropping "..turtle.getItemCount(3))
-    turtle.drop(turtle.getItemCount(3))
-  end
+  getIngredient(2, count_ingredient_top, slot_ingredient_top)
 
   -- Insert Ingredients
-  turtle.up()
   turtle.turnLeft()
-  turtle.select(1)
-  print("Attempting Insert Inert Stone")
-  os.sleep(5)
-  turtle.drop(1)
-
   turtle.select(2)
-  print("Attempting Insert Minium Dust")
-  os.sleep(5)
-  turtle.drop(8)
+  turtle.drop(count_ingredient_top)
+  turtle.select(1)
+  turtle.drop(count_ingredient_dust)
+
 
   -- Collect Output
+  os.sleep(infuse_time)
+  turtle.select(3)
+  turtle.suck(count_product)
+  if not turtle.compareTo(slot_product) then
+    print("Not expected product.")
+  end
+  turtle.dropUp(1)
+  turtle.turnRight()
+  turtle.down()
 
 end
 
 
 -- Functions
-function ReturnHome()
-  if redstone.getInput("back") then
-    turtle.down()
-  elseif redstone.getInput("left") then
-    turtle.turnRight()
-    turtle.down()
-  else
-    --already at home location
+function Reset()
+  -- check if we have items to clear out
+  local itemcount = 0
+  for i=1,6 do
+    itemcount = itemcount + turtle.getItemCount(i)
   end
+
+  -- If we have items, return to top
+  -- spot to drop of items in return.
+  if itemcount>0 then
+    if redstone.getInput("left") then
+      turtle.turnRight()
+    elseif not redstone.getInput("back") then
+      turtle.up()
+    end
+
+    for i=1,6 do
+      if turtle.getItemCount(i)>0 then
+        turtle.select(i)
+        turtle.dropUp()
+      end
+    end
+    turtle.down()
+
+  -- Else there are no items to drop
+  -- off, return to bottom instead.
+  else
+    if redstone.getInput("left") then
+      turtle.turnRight()
+    end
+    if redstone.getInput("back") then
+      turtle.down()
+    end
+  end
+
+  Refuel()
+
+  turtle.select(1)
+end
+
+function Refuel()
+  if turtle.getFuelLevel()<15000 then
+    turtle.select(5)
+    turtle.suckDown(64)
+    if not turtle.compareTo(slot_fuel) then
+      print("Unexpected item in fuel input!")
+      if not turtle.refuel() then
+        turtle.up()
+        turtle.dropUp()
+        turtle.down()
+      end
+    end
+    turtle.refuel()
+    print("Fuel Level Now: "..turtle.getFuelLevel())
+  end
+end
+
+function getIngredient(slot, count, compare)
+  turtle.select(slot)
+  turtle.suck(count)
+  while turtle.getItemCount(slot)<count do
+    turtle.suck(count-turtle.getItemCount(slot))
+  end
+  if not turtle.compareTo(compare) then
+    print("Not Expected Ingredients!")
+    local wasDown = turtle.up()
+    turtle.dropUp(turtle.getItemCount(slot))
+    if wasDown then turtle.down() end
+  end
+  if turtle.getItemCount(slot)>count then
+    print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot))-count))
+    turtle.drop(turtle.getItemCount(slot)-count)
+  end
+  turtle.select(slot+1)
+  if turtle.getItemCount(slot+1)>0 then
+    print("Extra items in next slot. Returning "..turtle.getItemCount(slot+1))
+    turtle.drop(turtle.getItemCount(slot+1))
+  end
+  turtle.select(slot)
 end
 
 
 -- Start running the actual code
 Main()
-
-
--- function SetUp()
---   if not redstone.getInput("left") then
---     turtle.up()
---   end
--- end
--- 
--- function SetDown()
---   if redstone.getInput("left") then
---     turtle.down()
---   end
--- end
--- 
--- function PushOutput()
---   print("PushOutput")
---   SetUp()
---   turtle.select(1)
---   turtle.dropUp()
---   turtle.select(2)
---   turtle.dropUp()
---   turtle.select(3)
---   turtle.dropUp()
---   turtle.select(4)
---   turtle.dropUp()
---   turtle.select(5)
---   turtle.dropUp()
--- end
--- 
--- function ClearSlot(slot)
---   --print("ClearSlot("..slot..")")
---   if turtle.getItemCount(slot)>0 then
---     SetUp()
---     turtle.select(slot)
---     turtle.dropUp()
---   end
--- end
--- 
--- function GetDiamonds()
---   SetUp()
---   ClearSlot(1)
---   ClearSlot(2)
---   turtle.select(1)
---   while turtle.getItemCount(1)<64 do
---     turtle.suck(64)
---   end
---   turtle.select(2)
---   if turtle.getItemCount(2)>0 then
---     print("Too many diamonds. Dropping "..(turtle.getItemCount(2)).." items.")
---     turtle.drop(turtle.getItemCount(2))
---   end
---   turtle.select(1)
---   if not turtle.compareTo(14) then
---     print("Not diamonds. Dropping "..turtle.getItemCount(1).." items.")
---     ClearSlot(1)
---   end
--- end
--- 
--- function GetCoal()
---   ClearSlot(2)
---   ClearSlot(3)
---   turtle.select(2)
---   SetDown()
---   turtle.suck(1)
---   if turtle.getItemCount(2)>1 then
---     print("Too many coal. Dropping "..(turtle.getItemCount(2)-1).." items.")
---     turtle.drop(turtle.getItemCount(2)-1)
---   end
---   if not turtle.compareTo(15) then
---     print("Not coal. Dropping "..turtle.getItemCount(2).." items.")
---     ClearSlot(2)
---   end
--- end
--- 
--- function Ready()
---   turtle.select(1)
---   if not turtle.compareTo(14) then
---     print("Not Ready - not diamond")
---     return false
---   end
---   if turtle.getItemCount(1)<8 then
---     print("Not Ready - too few diamond")
---     return false
---   end
--- 
---   -- turtle.select(2)
---   -- if not turtle.compareTo(15) then
---   --   print("Not Ready - not coal")
---   --   return false
---   -- end
---   -- if turtle.getItemCount(2)<1 then
---   --   print("Not Ready - too few coal")
---   --   return false
---   -- end
---   print("Ready")
---   return true
--- end
--- 
--- function PushInput()
---   print("PushInput")
---   SetDown()
---   turtle.select(1)
---   turtle.dropDown(64)
---   -- turtle.select(2)
---   -- turtle.dropDown(1)
--- end
--- 
--- function Refuel()
---   if turtle.getFuelLevel()<1000 then
---     SetDown()
---     turtle.select(5)
---     turtle.suck(64)
---     turtle.refuel(64)
---     print("Fuel Level Now: "..turtle.getFuelLevel())
---   else
---     print("Fuel Level Okay ("..turtle.getFuelLevel().."). Continuing...")
---   end
--- end
--- 
--- function GetMinium()
---   turtle.select(1)
---   turtle.suckDown(64)
---   PushOutput()
--- end
--- 
--- print("main")
--- PushOutput()
--- --while true do
--- Refuel()
--- GetDiamonds() --diamond
--- -- GetCoal() --charcoal
--- if Ready() then
---   PushInput()
---   os.sleep(641)
---   GetMinium() --minium
--- end
--- SetDown()
--- --end
