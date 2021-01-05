@@ -80,14 +80,15 @@
 
 
 -- Global Variables
-local slot_charcoal = 13
-local slot_inertstone = 14
-local slot_miniumdust = 15
-local slot_miniumstone = 16
+
 
 
 -- Main
 function Main()
+  local slot_charcoal = 13
+  local slot_inertstone = 14
+  local slot_miniumdust = 15
+  local slot_miniumstone = 16
   -- Reset, incase of unplanned restart
   ReturnHome()
 
@@ -113,8 +114,37 @@ function Main()
     print("Not Inert Stone!")
     turtle.dropUp(turtle.getItemCount(1))
   end
+  turtle.down()
+  turtle.select(2)
+  while turtle.getItemCount()<8 do
+    turtle.suck(8)
+  end
+  if not turtle.compareTo(slot_miniumdust) then
+    print("Not Minium Dust!")
+    turtle.dropUp(turtle.getItemCount(2))
+  end
+  if turtle.getItemCount(2)>8 then
+    print("Too many minium dust, dropping "..(turtle.getItemCount(2)-8))
+    turtle.drop(turtle.getItemCount(2)-8)
+  end
+  turtle.select(3)
+  if turtle.getItemCount(3)>0 then
+    print("Extra items in slot 3, dropping "..turtle.getItemCount(3))
+    turtle.drop(turtle.getItemCount(3))
+  end
 
   -- Insert Ingredients
+-- turtle.up()
+-- turtle.turnLeft()
+-- turtle.select(1)
+-- print("Attempting Insert Inert Stone")
+-- os.sleep(1)
+-- turtle.drop(1)
+
+-- turtle.select(2)
+-- print("Attempting Insert Minium Dust")
+-- os.sleep(1)
+-- turtle.drop(8)
 
   -- Collect Output
 
