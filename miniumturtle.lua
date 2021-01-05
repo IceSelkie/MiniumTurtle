@@ -64,10 +64,11 @@
 --       recover, should the turtle be
 --       restarted, or the chunk gets
 --       unexpectedly unloaded. And
---       finally a chest or DSU (deep
---       storage unit) directly above
---       the turtle's upper location for
---       minium stone output. Directly
+--       finally an item return directly
+--       above the turtle's upper
+--       location for returning
+--       unexpected items and minium
+--       stone output. Directly
 --       below the turtle's lower
 --       location is another container
 --       for storing charcoal or fuel.
@@ -85,7 +86,7 @@ local slot_ingredient_top = 14  -- inert stone
 local slot_ingredient_dust = 15 -- minium dust
 local slot_product = 16 -- minium stone
 
-local infuse_time = 10 -- 10 second smelt
+local infuse_time = 10.5 -- 10 second smelt
 
 local count_ingredient_top = 1
 local count_ingredient_dust = 8
@@ -94,33 +95,35 @@ local count_product = 1
 
 -- Main
 function Main()
+  while true do
+
   -- Reset, incase of unplanned restart
-  Reset()
+    Reset()
 
   -- Get Materials
-  getIngredient(1, count_ingredient_dust, slot_ingredient_dust)
-  turtle.up()
-  getIngredient(2, count_ingredient_top, slot_ingredient_top)
+    getIngredient(1, count_ingredient_dust, slot_ingredient_dust)
+    turtle.up()
+    getIngredient(2, count_ingredient_top, slot_ingredient_top)
 
   -- Insert Ingredients
-  turtle.turnLeft()
-  turtle.select(2)
-  turtle.drop(count_ingredient_top)
-  turtle.select(1)
-  turtle.drop(count_ingredient_dust)
+    turtle.turnLeft()
+    turtle.select(2)
+    turtle.drop(count_ingredient_top)
+    turtle.select(1)
+    turtle.drop(count_ingredient_dust)
 
 
   -- Collect Output
-  os.sleep(infuse_time)
-  turtle.select(3)
-  turtle.suck(count_product)
-  if not turtle.compareTo(slot_product) then
-    print("Not expected product.")
+    os.sleep(infuse_time)
+    turtle.select(3)
+    turtle.suck(count_product)
+    if not turtle.compareTo(slot_product) then
+      print("Not expected product.")
+    end
+    turtle.dropUp(1)
+    turtle.turnRight()
+    turtle.down()
   end
-  turtle.dropUp(1)
-  turtle.turnRight()
-  turtle.down()
-
 end
 
 
@@ -195,7 +198,7 @@ function getIngredient(slot, count, compare)
     if wasDown then turtle.down() end
   end
   if turtle.getItemCount(slot)>count then
-    print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot))-count))
+    print("Too many ingredients grabbed. Returning "..(turtle.getItemCount(slot)-count))
     turtle.drop(turtle.getItemCount(slot)-count)
   end
   turtle.select(slot+1)
