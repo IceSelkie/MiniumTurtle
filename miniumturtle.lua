@@ -80,7 +80,10 @@
 
 
 -- Global Variables
-local x = 1
+local slot_charcoal = 13
+local slot_inertstone = 14
+local slot_miniumdust = 15
+local slot_miniumstone = 16
 
 
 -- Main
@@ -88,7 +91,28 @@ function Main()
   -- Reset, incase of unplanned restart
   ReturnHome()
 
+  -- Refuel
+  if turtle.getFuelLevel()<15000 then
+    turtle.select(5)
+    if turtle.getItemCount(5)>0 then
+      turtle.refuel(turtle.getItemCount(5))
+      turtle.dropUp(turtle.getItemCount(5))
+    end
+    turtle.suckDown(64)
+    turtle.refuel(64)
+    print("Fuel Level Now: "..turtle.getFuelLevel())
+  else
+
   -- Get Materials
+  turtle.up()
+  turtle.select(1)
+  while turtle.getItemCount()<1 do
+    turtle.suck(1)
+  end
+  if not turtle.compareTo(slot_inertstone) then
+    print("Not Inert Stone!")
+    turtle.dropUp(turtle.getItemCount(1))
+  end
 
   -- Insert Ingredients
 
